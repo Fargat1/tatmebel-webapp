@@ -808,7 +808,7 @@
         <div class="btn-arrow">›</div>
       </div>
 
-      <div class="menu-btn stagger-4" onclick="sendData('callback_request')">
+      <div class="menu-btn stagger-4" onclick="showScreen('callback')">
         <div class="btn-icon icon-callback">📞</div>
         <div class="btn-content">
           <div class="btn-title">Обратный звонок</div>
@@ -1035,7 +1035,32 @@
       <button class="form-next-btn" style="background: transparent; border: 1px solid var(--border); color: var(--text-secondary); margin-top: 8px;" onclick="showScreen('main')">Отменить</button>
     </div>
   </div>
+<!-- ═══════════ CALLBACK SCREEN ═══════════ -->
+<div class="screen" id="screen-callback">
+  <button class="back-btn" onclick="showScreen('main')">‹ Назад</button>
+  <div class="section-label">Обратный звонок</div>
 
+  <div class="info-card">
+    <div class="card-title">📞 Перезвоним вам!</div>
+    <div class="card-text">Оставьте номер телефона и удобное время — мастер свяжется с вами лично.</div>
+  </div>
+
+  <div class="form-step active" id="cb-step-1">
+    <div class="form-label">Ваш номер телефона</div>
+    <input class="form-input" id="cb-phone" placeholder="+7 (___) ___-__-__" type="tel">
+    <button class="form-next-btn" onclick="cbNext()">Далее →</button>
+  </div>
+
+  <div class="form-step" id="cb-step-2">
+    <div class="form-label">Удобное время для звонка</div>
+    <div class="form-select-grid">
+      <div class="form-option" onclick="cbPickTime(this, 'Утром 9:00–12:00')"><div class="opt-icon">🌅</div><div class="opt-text">Утром 9–12</div></div>
+      <div class="form-option" onclick="cbPickTime(this, 'Днём 12:00–16:00')"><div class="opt-icon">☀️</div><div class="opt-text">Днём 12–16</div></div>
+      <div class="form-option" onclick="cbPickTime(this, 'Вечером 16:00–20:00')"><div class="opt-icon">🌆</div><div class="opt-text">Вечером 16–20</div></div>
+      <div class="form-option" onclick="cbPickTime(this, 'В любое время')"><div class="opt-icon">🕐</div><div class="opt-text">В любое время</div></div>
+    </div>
+  </div>
+</div>
   <!-- ═══════════ FAQ SCREEN ═══════════ -->
   <div class="screen" id="screen-faq">
     <button class="back-btn" onclick="showScreen('main')">‹ Назад</button>
@@ -1311,6 +1336,22 @@
     });
     showScreen('success');
   }
+  // Callback form
+let cbPhone = '';
+function cbNext() {
+  cbPhone = document.getElementById('cb-phone').value.trim();
+  if (!cbPhone) { showToast('Укажите номер телефона'); return; }
+  document.getElementById('cb-step-1').classList.remove('active');
+  document.getElementById('cb-step-2').classList.add('active');
+}
+function cbPickTime(el, time) {
+  document.querySelectorAll('#cb-step-2 .form-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(() => {
+    sendData('callback_request', { phone: cbPhone, time: time });
+    showScreen('success');
+  }, 300);
+}
 </script>
 </body>
 </html>
